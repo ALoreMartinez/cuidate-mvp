@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Cuídate MVP — Estructura y flujo de datos</title>
+<style>
+  :root {
+    --bg: #f7f7fb;
+    --card: #ffffff;
+    --border: #e2e2ee;
+    --indigo: #3730a5;
+    --indigo-soft: #eef0ff;
+    --lima: #d7f26d;
+    --text: #1a1a2e;
+    --muted: #6b6b80;
+    --mono-bg: #101026;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14141f;
+      --card: #1d1d2c;
+      --border: #33334a;
+      --indigo: #9aa3ff;
+      --indigo-soft: #23233a;
+      --lima: #d7f26d;
+      --text: #eaeaf5;
+      --muted: #9d9db0;
+      --mono-bg: #0a0a16;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding: 32px 20px 60px;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.02em; }
+  .subtitle { color: var(--muted); font-size: 14px; margin: 0 0 32px; }
+  h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin: 0 0 14px;
+  }
+  section { margin-bottom: 40px; }
+
+  /* ---- File tree ---- */
+  .tree {
+    background: var(--mono-bg);
+    color: #d6d6f5;
+    border-radius: 14px;
+    padding: 20px 24px;
+    font-family: "SF Mono", Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.9;
+    overflow-x: auto;
+  }
+  .tree .dim { color: #7c7ca0; }
+  .tree .hl { color: var(--lima); font-weight: 600; }
+
+  /* ---- Layout for flow ---- */
+  .flow-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .node {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 20px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  }
+  .node-root {
+    background: var(--indigo);
+    color: white;
+    border: none;
+    font-weight: 600;
+    min-width: 260px;
+  }
+  .node-root .sub { color: #d8dafc; font-weight: 400; font-size: 12px; margin-top: 4px; }
+
+  .arrow-down {
+    width: 2px;
+    height: 26px;
+    background: var(--border);
+    position: relative;
+  }
+  .arrow-down::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 7px solid var(--border);
+  }
+
+  .screens-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    width: 100%;
+    margin-top: 8px;
+  }
+  .screen-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .screen-card .label {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--indigo);
+  }
+  .screen-card .view-key {
+    display: inline-block;
+    font-family: "SF Mono", Consolas, monospace;
+    font-size: 11px;
+    background: var(--indigo-soft);
+    color: var(--indigo);
+    padding: 2px 8px;
+    border-radius: 6px;
+    width: fit-content;
+  }
+  .screen-card ul {
+    margin: 4px 0 0;
+    padding-left: 18px;
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .screen-card .data {
+    font-size: 11.5px;
+    background: rgba(255, 200, 0, 0.08);
+    border: 1px dashed #c9a53b;
+    border-radius: 8px;
+    padding: 6px 8px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* connector lines between root and 4 cards */
+  .connectors {
+    position: relative;
+    height: 30px;
+    width: 100%;
+  }
+  .connectors svg { width: 100%; height: 100%; display: block; }
+  .connectors line, .connectors path {
+    stroke: var(--border);
+    stroke-width: 2;
+    fill: none;
+  }
+
+  .nav-badges {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .badge {
+    font-size: 11px;
+    background: var(--indigo-soft);
+    color: var(--indigo);
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+
+  .legend {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+  }
+  .legend span.dot {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  .note {
+    background: var(--indigo-soft);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .note b { color: var(--indigo); }
+
+  @media (max-width: 800px) {
+    .screens-row { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) {
+    .screens-row { grid-template-columns: 1fr; }
+  }
+
+  /* ---- Component guide ---- */
+  /* Colores reales tomados de src/index.css (@theme) — fijos, no se adaptan al tema del visor
+     porque representan la paleta de marca real de la app, no la UI de este diagrama. */
+  .comp-preview {
+    --app-prussian: #0C0061;
+    --app-indigo: #4C33FF;
+    --app-periwinkle: #9684FF;
+    --app-lavender: #E5E6FF;
+    --app-lilac: #BCBDFF;
+    --app-lima: #D4FF3D;
+    --app-negro: #0A0A0A;
+    --app-info: #2A4BFF;
+    font-family: "Segoe UI", sans-serif;
+  }
+
+  .comp-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  .comp-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .comp-preview {
+    background: var(--app-lavender, #E5E6FF);
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 92px;
+  }
+  .comp-meta .name {
+    font-weight: 700;
+    font-size: 13.5px;
+    color: var(--text);
+  }
+  .comp-meta .desc {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 3px;
+    line-height: 1.5;
+  }
+  .comp-meta .where {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 10.5px;
+    font-family: "SF Mono", Consolas, monospace;
+    background: var(--indigo-soft);
+    color: var(--indigo);
+    padding: 2px 7px;
+    border-radius: 6px;
+  }
+
+  @media (max-width: 900px) {
+    .comp-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    .comp-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+  <h1>Cuídate MVP — Estructura del proyecto y flujo de datos</h1>
+  <p class="subtitle">Diagrama generado a partir del código en <code>src/</code> · app de una sola pantalla (SPA) con datos de ejemplo hardcodeados</p>
+
+  <section>
+    <h2>Estructura de archivos</h2>
+    <div class="tree">
+<span class="dim">cuidate-mvp/</span>
+├── index.html <span class="dim">— monta #root, importa fuentes y main.tsx</span>
+├── package.json <span class="dim">— React 19, Vite, Tailwind 4, lucide-react (@google/genai sin uso)</span>
+├── vite.config.ts / tsconfig.json
+├── metadata.json <span class="dim">— metadata del scaffold de AI Studio</span>
+└── src/
+    ├── <span class="hl">main.tsx</span> <span class="dim">— createRoot().render(&lt;App /&gt;)</span>
+    ├── <span class="hl">App.tsx</span> <span class="dim">— ★ TODA la app vive aquí: estado + 4 vistas + datos mock inline</span>
+    └── index.css <span class="dim">— estilos base / Tailwind</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Flujo de datos y navegación</h2>
+
+    <div class="flow-wrap">
+      <div class="node node-root">
+        App.tsx
+        <div class="sub">useState&lt;'home' | 'appointment' | 'documents' | 'citas'&gt;('home')</div>
+      </div>
+      <div class="arrow-down"></div>
+
+      <div class="connectors">
+        <svg viewBox="0 0 800 30" preserveAspectRatio="none">
+          <path d="M 400 0 L 400 12 L 100 12 L 100 30" />
+          <path d="M 400 0 L 400 12 L 300 12 L 300 30" />
+          <path d="M 400 0 L 400 12 L 500 12 L 500 30" />
+          <path d="M 400 0 L 400 12 L 700 12 L 700 30" />
+        </svg>
+      </div>
+
+      <div class="screens-row">
+        <div class="screen-card">
+          <span class="view-key">currentView === 'home'</span>
+          <span class="label">🏠 Inicio</span>
+          <ul>
+            <li>Tarjeta "próxima cita" (fecha/doctor hardcoded)</li>
+            <li>Botón "Cargar documento" (sin acción real)</li>
+            <li>Accesos rápidos: Medicamentos, Especialidades, Docs pendientes</li>
+            <li>Historial por especialidad (grid de botones)</li>
+          </ul>
+          <div class="data">Datos: strings fijos en JSX. Click en la tarjeta → <b>setCurrentView('appointment')</b></div>
+        </div>
+
+        <div class="screen-card">
+          <span class="view-key">currentView === 'documents'</span>
+          <span class="label">📄 Documentos</span>
+          <ul>
+            <li>Filtros: Todos / Fórmulas / Análisis / Imágenes (visuales, sin lógica)</li>
+            <li>3 documentos de ejemplo (análisis, orden médica, radiografía)</li>
+            <li>FAB de cámara (sin acción real)</li>
+          </ul>
+          <div class="data">Datos: array de tarjetas escrito a mano, sin fetch ni estado</div>
+        </div>
+
+        <div class="screen-card">
+          <span class="view-key">currentView === 'citas'</span>
+          <span class="label">📅 Citas</span>
+          <ul>
+            <li>Tabs Próximas / Pasadas (solo visual)</li>
+            <li>2 citas de ejemplo (Cardiología, Dermatología)</li>
+          </ul>
+          <div class="data">Click en tarjeta Cardiología → <b>setCurrentView('appointment')</b></div>
+        </div>
+
+        <div class="screen-card">
+          <span class="view-key">currentView === 'appointment'</span>
+          <span class="label">🩺 Detalle de cita</span>
+          <ul>
+            <li>Info de la cita (fecha, doctora, ubicación + mapa estático)</li>
+            <li>Instrucciones previas (ayuno, traer estudios)</li>
+            <li>Documentos relacionados</li>
+            <li>Historial de Cardiología (timeline, 2 entradas)</li>
+          </ul>
+          <div class="data">← ArrowLeft → <b>setCurrentView('home')</b>. Único destino accesible desde 'home' y 'citas'</div>
+        </div>
+      </div>
+
+      <div class="nav-badges">
+        <span class="badge">Bottom nav: Inicio · Documentos · Citas · Perfil (sin implementar)</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Guía de componentes UI</h2>
+    <p class="subtitle" style="margin-bottom:18px;">
+      No existen componentes separados (todo es JSX inline en <code>App.tsx</code>), pero el mismo patrón visual
+      se repite varias veces. Aquí está el "vocabulario" de UI con los colores reales de <code>src/index.css</code>.
+    </p>
+
+    <div class="comp-grid">
+
+      <div class="comp-card">
+        <div class="comp-preview" style="background:var(--app-lavender, #E5E6FF); justify-content:flex-start;">
+          <div style="display:flex; align-items:center; gap:8px; width:100%;">
+            <div style="width:28px; height:28px; border-radius:50%; background:#ccc; flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <div style="font-size:11px; font-weight:600; color:var(--app-indigo);">Hola, Usuario</div>
+              <div style="font-size:9px; color:#888;">¡Bienvenido de vuelta!</div>
+            </div>
+            <div style="width:22px; height:22px; border-radius:50%; background:white; display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--app-indigo);">🔔</div>
+          </div>
+        </div>
+        <div class="comp-meta">
+          <div class="name">Header con avatar</div>
+          <div class="desc">Sticky, blur de fondo, avatar + saludo a la izquierda, campana a la derecha.</div>
+          <span class="where">Inicio · Documentos · Citas</span>
+        </div>
+      </div>
+
+      <div class="comp-card">
+        <div class="comp-preview" style="background:var(--app-prussian,#0C0061); flex-direction:column; align-items:flex-start; gap:6px; padding:14px;">
+          <div style="font-size:9px; color:#cfcfff; text-transform:uppercase; letter-spacing:0.05em;">📅 Próxima cita en 3 días</div>
+          <div style="font-size:15px; font-weight:700; color:white;">15 Oct, 10:00 AM</div>
+          <button style="background:var(--app-lima,#D4FF3D); color:var(--app-negro,#0A0A0A); font-size:9px; font-weight:700; border:none; padding:5px 12px; border-radius:999px;">Ver detalles</button>
+        </div>
+        <div class="comp-meta">
+          <div class="name">Tarjeta destacada (dark card)</div>
+          <div class="desc">Fondo prussian, texto blanco, botón pill lima. Es el CTA principal de la pantalla.</div>
+          <span class="where">Inicio · Detalle de cita</span>
+        </div>
+      </div>
+
+      <div class="comp-card">
+        <div class="comp-preview" style="background:transparent; border:2px dashed var(--app-lilac,#BCBDFF); border-radius:12px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div style="width:26px; height:26px; border-radius:50%; background:var(--app-negro,#0A0A0A); color:var(--app-lima,#D4FF3D); display:flex; align-items:center; justify-content:center; font-size:12px;">📷</div>
+            <div style="font-size:10.5px; font-weight:600; color:var(--app-indigo);">Cargar nuevo documento</div>
+          </div>
+        </div>
+        <div class="comp-meta">
+          <div class="name">Botón de borde punteado</div>
+          <div class="desc">Invita a una acción secundaria (subir foto). Icono circular negro/lima + texto.</div>
+          <span class="where">Inicio</span>
+        </div>
+      </div>
+
+      <div class="comp-card">
+        <div class="comp-preview" style="background:var(--app-lavender,#E5E6FF); gap:8px;">
+          <div style="background:white; border-radius:10px; padding:8px 10px; display:flex; flex-direction:column; gap:6px; width:90px;">
+            <div style="width:22px; height:22px; border-radius:50%; background:#eef0ff; display:flex; align-items:center; justify-content:center; font-size:11px;">💊</div>
+            <div style="font-size:9.5px; font-weight:700; color:var(--app-negro,#0A0A0A);">Medicamentos</div>
+            <div style="font-size:8px; color:#999;">3 activos</div>
+          </div>
+        </div>
+        <div class="comp-meta">
+          <div class="name">Mini-card de info rápida</div>
+          <div class="desc">Carrusel horizontal. Icono circular + etiqueta + valor corto.</div>
+          <span class="where">Inicio ("Información rápida")</span>
+        </div>
+      </div>
+
+      <div class="comp-card">
+        <div class="comp-preview" style="background:var(--app-lavender,#E5E6FF); gap:8px;">
+          <div style="background:white; border-radius:10px; padding:10px; display:flex; flex-direction:column; align-items:center; gap:5px; width:80px;">
+            <div style="font-size:16px;">❤️</div>
+            <div style="font-size:9.5px; font-weight:700; color:var(--app-negro,#0A0A0A);">Cardiología</div>
+          </div>
+        </div>
+        <div class="comp-meta">
+          <div class="name">Botón de categoría (grid 2×2)</div>
+          <div class="desc">Icono grande centrado + nombre de especialidad. Sin acción real al hacer click.</div>
+          <span class="where">Inicio ("Historial por especialidad")</span>
+        </div>
+      </div>
+
+      <div class="comp-card">
+        <div class="comp-preview" style="background:var(--app-lavender,#E5E6FF); justify-content:flex-start;">
+          <div style="background:white; border-radius:10px; padding:8px 10px; display:flex; align-items:center; gap:8px; width:100%;">
+            <div style="width:26px; height:26px; border-radius:8px; background:#eef0ff; display:flex; align-items:center; justify-content:center; font-size:12px; flex-shrink:0;">🧪</div>
+            <div style="flex:1;">
+              <div style="font-size:9.5px; font-weight:700; color:var(--app-negro,#0A0A0A);">Análisis de sangre</div>
+              <div style="font-size:8px; color:#999;">Laboratorio Central • 12 Oct</div>
+            </div>
+            <div style="font-size:12px; color:#999;">⬇</div>
+          </div>
+        </div>
+        <div class="comp-meta">
+          <div class="name">Item de documento</div>
+          <div class="desc">Icono + título + meta + tags de categoría, botón de descarga a la derecha.</div>
+          <span class="where">Documentos · Detalle de cita ("Relacionados")</span>
+        </div>
+      </div>
+
+      <div class="comp-card">
+        <div class="comp-preview" style="background:var(--app-lavender,#E5E6FF); gap:6px;">
+          <span style="background:var(--app-indigo,#4C33FF); color:white; font-size:9.5px; font-weight:700; padding:4px 10px; border-radius:999px;">Todos</span>
+          <span style="background:white; color:#777; font-size:9.5px; font-weight:700; padding:4px 10px; border-radius:999px;">Fórmulas</span>
+        </div>
+        <div class="comp-meta">
+          <div class="name">Pill de filtro / tab</div>
+          <div class="desc">Chip horizontal-scroll. Estado activo: fondo indigo; inactivo: fondo blanco.</div>
+          <span class="where">Documentos (filtros) · Citas (tabs)</span>
+        </div>
+      </div>
+
+      <div class="comp-card">
+        <div class="comp-preview" style="background:var(--app-lavender,#E5E6FF); gap:6px;">
+          <span style="background:var(--app-lima,#D4FF3D); color:var(--app-negro,#0A0A0A); font-size:9.5px; font-weight:700; padding:3px 9px; border-radius:999px; text-transform:uppercase;">Confirmada</span>
+          <span style="background:var(--app-lavender,#E5E6FF); border:1px solid var(--app-lilac,#BCBDFF); color:var(--app-indigo,#4C33FF); font-size:9.5px; font-weight:700; padding:3px 9px; border-radius:999px; text-transform:uppercase;">Pendiente</span>
+        </div>
+        <div class="comp-meta">
+          <div class="name">Badge de estado</div>
+          <div class="desc">Etiqueta corta uppercase: Confirmada (lima), Pendiente (lavanda), Nuevo (verde).</div>
+          <span class="where">Citas · Detalle de cita · Documentos ("Nuevo")</span>
+        </div>
+      </div>
+
+      <div class="comp-card">
+        <div class="comp-preview" style="background:var(--app-lavender,#E5E6FF);">
+          <div style="width:44px; height:44px; border-radius:50%; background:var(--app-lima,#D4FF3D); display:flex; align-items:center; justify-content:center; font-size:18px; box-shadow:0 6px 16px rgba(12,0,97,0.25);">📷</div>
+        </div>
+        <div class="comp-meta">
+          <div class="name">FAB (botón flotante)</div>
+          <div class="desc">Círculo lima fijo en la esquina inferior derecha. Acción principal de la pantalla.</div>
+          <span class="where">Documentos · Citas</span>
+        </div>
+      </div>
+
+      <div class="comp-card">
+        <div class="comp-preview" style="background:var(--app-lavender,#E5E6FF); flex-direction:column; align-items:flex-start; gap:4px; padding:14px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div style="width:10px; height:10px; border-radius:50%; background:#34d399; flex-shrink:0;"></div>
+            <div style="font-size:9.5px; font-weight:700; color:#34d399;">10 Ago, 2023</div>
+          </div>
+          <div style="background:white; border-radius:8px; padding:7px 9px; margin-left:18px; width:calc(100% - 18px);">
+            <div style="font-size:9px; font-weight:700; color:var(--app-negro,#0A0A0A);">Consulta de Seguimiento</div>
+            <div style="font-size:7.5px; color:#999;">Dra. Elena Rivas</div>
+          </div>
+        </div>
+        <div class="comp-meta">
+          <div class="name">Timeline / historial</div>
+          <div class="desc">Línea vertical con puntos por fecha; el más reciente resaltado en verde.</div>
+          <span class="where">Detalle de cita ("Historial de Cardiología")</span>
+        </div>
+      </div>
+
+      <div class="comp-card">
+        <div class="comp-preview" style="background:white; justify-content:space-around; padding:10px;">
+          <div style="display:flex; flex-direction:column; align-items:center; gap:3px; background:var(--app-indigo,#4C33FF); color:white; padding:6px 10px; border-radius:14px;">
+            <span style="font-size:13px;">🏠</span>
+            <span style="font-size:7px; font-weight:700;">Inicio</span>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:center; gap:3px; color:#aaa;">
+            <span style="font-size:13px;">📄</span>
+            <span style="font-size:7px; font-weight:700;">Documentos</span>
+          </div>
+        </div>
+        <div class="comp-meta">
+          <div class="name">Item de bottom nav</div>
+          <div class="desc">Icono + etiqueta; activo = fondo indigo con icono/texto blanco.</div>
+          <span class="where">Barra inferior (oculta en Detalle de cita)</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>Cómo fluyen los datos (en palabras simples)</h2>
+    <div class="note">
+      No hay backend, API ni base de datos. <b>App.tsx</b> mantiene una sola variable de estado
+      (<code>currentView</code>) que decide qué bloque JSX se renderiza. Todo el contenido —nombres de doctores,
+      fechas, documentos, historial— está <b>escrito directamente en el JSX</b> como texto/valores fijos
+      (no hay props que viajen entre componentes porque solo existe un componente). La "navegación" entre
+      pantallas ocurre cuando el usuario hace click en una tarjeta o botón, que llama a
+      <code>setCurrentView(...)</code> y React vuelve a renderizar el bloque correspondiente.
+      La dependencia <code>@google/genai</code> está declarada en <code>package.json</code> pero no se
+      usa en ningún archivo de <code>src/</code> — es un remanente del scaffold de Google AI Studio.
+    </div>
+  </section>
+
+  <div class="legend">
+    <div><span class="dot" style="background:var(--indigo)"></span>Estado central (useState)</div>
+    <div><span class="dot" style="background:var(--card); border:1px solid var(--border)"></span>Vista / pantalla renderizada condicionalmente</div>
+    <div><span class="dot" style="background:#c9a53b"></span>Datos de ejemplo (hardcoded, sin fetch)</div>
+  </div>
+
+</body>
+</html>
