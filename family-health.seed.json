@@ -1,0 +1,200 @@
+{
+  "account_owner_id": "usr_001",
+  "family_group_name": "Familia de Angie",
+  "members": [
+    {
+      "id": "usr_001",
+      "name": "Angie",
+      "relationship": "self",
+      "age": 30,
+      "eps": "Sanitas",
+      "regime": "Contributivo",
+      "diagnostics": [
+        {
+          "disease": "Migraña Episódica",
+          "diagnostic_date": "2021-06-15",
+          "specialist": "Neurología",
+          "status": "Controlada"
+        }
+      ],
+      "medications": [
+        {
+          "name": "Acetaminofén + Cafeína",
+          "dose": "500mg/65mg",
+          "form": "Tableta",
+          "frequency": "1 tableta cada 8 horas solo en caso de crisis de dolor",
+          "schedule": "conditional",
+          "target_disease": "Migraña Episódica"
+        },
+        {
+          "name": "Etinilestradiol + Drospirenona",
+          "dose": "0.03mg/3mg",
+          "form": "Tableta",
+          "frequency": "1 tableta diaria por 21 días",
+          "schedule": "09:00 AM",
+          "target_disease": "Planificación Familiar"
+        }
+      ],
+      "vital_signs_ranges": {
+        "blood_pressure": { "min_ideal": "110/70", "max_ideal": "125/80" },
+        "heart_rate": { "min_ideal": 60, "max_ideal": 100 }
+      }
+    },
+    {
+      "id": "usr_002",
+      "name": "Gloria",
+      "relationship": "mother",
+      "age": 55,
+      "eps": "Sanitas",
+      "regime": "Contributivo",
+      "diagnostics": [
+        {
+          "disease": "Hipertensión Arterial Primaria",
+          "diagnostic_date": "2023-01-20",
+          "specialist": "Medicina General / Interna",
+          "status": "Controlada"
+        },
+        {
+          "disease": "Dislipidemia (Colesterol Alto)",
+          "diagnostic_date": "2024-05-10",
+          "specialist": "Medicina General",
+          "status": "En tratamiento"
+        }
+      ],
+      "medications": [
+        {
+          "name": "Losartán Potásico",
+          "dose": "50mg",
+          "form": "Tableta",
+          "frequency": "1 tableta cada 12 horas",
+          "schedule": "07:00 AM, 07:00 PM",
+          "target_disease": "Hipertensión Arterial Primaria"
+        },
+        {
+          "name": "Atorvastatina",
+          "dose": "20mg",
+          "form": "Tableta",
+          "frequency": "1 tableta diaria antes de dormir",
+          "schedule": "09:00 PM",
+          "target_disease": "Dislipidemia"
+        }
+      ],
+      "vital_signs_ranges": {
+        "blood_pressure": { "min_ideal": "115/75", "max_ideal": "130/85" },
+        "heart_rate": { "min_ideal": 60, "max_ideal": 90 }
+      }
+    },
+    {
+      "id": "usr_003",
+      "name": "Epaminondas",
+      "relationship": "grandfather",
+      "age": 85,
+      "eps": "SURA",
+      "regime": "Contributivo (Beneficiario)",
+      "diagnostics": [
+        {
+          "disease": "Enfermedad Pulmonar Obstructiva Crónica (EPOC)",
+          "diagnostic_date": "2018-11-04",
+          "specialist": "Neumología",
+          "status": "Estable"
+        },
+        {
+          "disease": "Hipertensión Arterial Estadio 2",
+          "diagnostic_date": "2015-02-14",
+          "specialist": "Cardiología",
+          "status": "En tratamiento"
+        }
+      ],
+      "medications": [
+        {
+          "name": "Bromuro de Ipratropio",
+          "dose": "20mcg/inhalación",
+          "form": "Inhalador (Puff)",
+          "frequency": "2 inhalaciones cada 6 horas",
+          "schedule": "06:00 AM, 12:00 PM, 06:00 PM, 12:00 AM",
+          "target_disease": "EPOC"
+        },
+        {
+          "name": "Amlodipino",
+          "dose": "5mg",
+          "form": "Tableta",
+          "frequency": "1 tableta al día",
+          "schedule": "08:00 AM",
+          "target_disease": "Hipertensión Arterial"
+        },
+        {
+          "name": "Hidroclorotiazida",
+          "dose": "25mg",
+          "form": "Tableta",
+          "frequency": "1 tableta al día en la mañana",
+          "schedule": "06:00 AM",
+          "target_disease": "Hipertensión Arterial"
+        }
+      ],
+      "vital_signs_ranges": {
+        "blood_pressure": { "min_ideal": "120/80", "max_ideal": "140/90" },
+        "oxygen_saturation": { "min_ideal": 88, "max_ideal": 94 }
+      }
+    },
+    {
+      "id": "usr_004",
+      "name": "Abigail",
+      "relationship": "grandmother",
+      "age": 90,
+      "eps": "SURA",
+      "regime": "Contributivo (Beneficiario)",
+      "diagnostics": [
+        {
+          "disease": "Demencia Tipo Alzheimer Avanzada",
+          "diagnostic_date": "2020-03-22",
+          "specialist": "Neurología / Geriatría",
+          "status": "Progresiva"
+        },
+        {
+          "disease": "Osteoporosis Severa",
+          "diagnostic_date": "2022-07-19",
+          "specialist": "Reumatología",
+          "status": "En tratamiento"
+        }
+      ],
+      "medications": [
+        {
+          "name": "Donepezilo",
+          "dose": "10mg",
+          "form": "Tableta",
+          "frequency": "1 tableta al día antes de acostarse",
+          "schedule": "09:00 PM",
+          "target_disease": "Demencia Tipo Alzheimer"
+        },
+        {
+          "name": "Memantina",
+          "dose": "20mg",
+          "form": "Tableta",
+          "frequency": "1 tableta al día con el desayuno",
+          "schedule": "07:30 AM",
+          "target_disease": "Demencia Tipo Alzheimer"
+        },
+        {
+          "name": "Calcio + Vitamina D3",
+          "dose": "600mg/400UI",
+          "form": "Tableta recubierta",
+          "frequency": "1 tableta con el almuerzo",
+          "schedule": "12:30 PM",
+          "target_disease": "Osteoporosis Severa"
+        },
+        {
+          "name": "Quetiapina",
+          "dose": "25mg",
+          "form": "Tableta",
+          "frequency": "Media tableta si presenta agitación nocturna",
+          "schedule": "conditional",
+          "target_disease": "Síntomas Conductuales de la Demencia"
+        }
+      ],
+      "vital_signs_ranges": {
+        "blood_pressure": { "min_ideal": "120/80", "max_ideal": "140/90" },
+        "heart_rate": { "min_ideal": 60, "max_ideal": 90 }
+      }
+    }
+  ]
+}
