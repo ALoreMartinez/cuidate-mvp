@@ -8,5 +8,4 @@
 3. Documentar el token nuevo en la tabla de [[decisions/design]] (valor + uso) para que no se
    pierda el porqué.
 4. Si el token es una fuente nueva, verificar que se cargue de verdad (link en `index.html` o
-   `@font-face`) — no asumir que basta con nombrarla en `@theme`. Ver caso "Nohemi" en
-   [[gotchas/known-issues]].
+   `@font-face`) — no asumir que basta con nombrarla en `@theme`.

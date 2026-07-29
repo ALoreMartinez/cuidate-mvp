@@ -18,14 +18,10 @@ historial por especialidad, listado de citas. Todo el contenido visible hoy es m
 | `--color-negro` | `#0A0A0A` | texto sobre fondos claros/lima |
 | `--color-azul-info` | `#2A4BFF` | informativo (poco usado aún) |
 
-Fuentes: `--font-display` = Nohemi/Clash Display (títulos), `--font-body` = Switzer/Inter (cuerpo).
+Fuentes: `--font-display` = Clash Display (títulos), `--font-body` = Switzer (cuerpo).
 Sombras: `--shadow-float` (cards), `--shadow-modal` (headers destacados).
 
-**Nota:** "Nohemi" nunca se carga (no hay `@font-face` ni `<link>`) — cae siempre a Clash Display.
-No es un bug bloqueante, pero si se quiere Nohemi de verdad hay que añadir su fuente. Ver
-[[gotchas/known-issues]].
-
-Fuentes reales cargadas vía Fontshare CDN en `index.html` (Switzer + Clash Display).
+Fuentes cargadas vía Fontshare CDN en `index.html` (Switzer + Clash Display).
 
 ## Patrón de vistas
 Cada vista es un bloque condicional `{currentView === 'x' && (...)}` dentro del mismo

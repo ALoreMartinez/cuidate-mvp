@@ -6,6 +6,12 @@
       "runtimeExecutable": "C:\\Program Files\\nodejs\\node.exe",
       "runtimeArgs": ["node_modules/vite/bin/vite.js", "--port=3000", "--host=0.0.0.0"],
       "port": 3000
+    },
+    {
+      "name": "cuidate-mvp-dev-all",
+      "runtimeExecutable": "C:\\Program Files\\nodejs\\npm.cmd",
+      "runtimeArgs": ["run", "dev:all"],
+      "port": 3000
     }
   ]
 }

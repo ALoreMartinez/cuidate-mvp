@@ -10,10 +10,8 @@
     --border: #e2e2ee;
     --indigo: #3730a5;
     --indigo-soft: #eef0ff;
-    --lima: #d7f26d;
     --text: #1a1a2e;
     --muted: #6b6b80;
-    --mono-bg: #101026;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -22,10 +20,8 @@
       --border: #33334a;
       --indigo: #9aa3ff;
       --indigo-soft: #23233a;
-      --lima: #d7f26d;
       --text: #eaeaf5;
       --muted: #9d9db0;
-      --mono-bg: #0a0a16;
     }
   }
   * { box-sizing: border-box; }
@@ -48,19 +44,71 @@
   }
   section { margin-bottom: 40px; }
 
-  /* ---- File tree ---- */
-  .tree {
-    background: var(--mono-bg);
-    color: #d6d6f5;
-    border-radius: 14px;
-    padding: 20px 24px;
-    font-family: "SF Mono", Consolas, monospace;
-    font-size: 13px;
-    line-height: 1.9;
-    overflow-x: auto;
+  /* ---- File tree (gráfico) ---- */
+  .file-tree {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
   }
-  .tree .dim { color: #7c7ca0; }
-  .tree .hl { color: var(--lima); font-weight: 600; }
+  .ft-root, .ft-folder {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+  }
+  .ft-folder { padding: 6px 10px; border-radius: 9px; margin-top: 2px; }
+  .ft-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    background: var(--indigo-soft);
+    color: var(--indigo);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .ft-folder .ft-icon { width: 22px; height: 22px; font-size: 12px; border-radius: 6px; }
+  .ft-name { font-size: 13px; font-weight: 700; line-height: 1.3; color: var(--text); }
+  .ft-desc { font-size: 11px; line-height: 1.3; color: var(--muted); }
+  .ft-group {
+    margin-left: 13px;
+    border-left: 2px solid var(--border);
+    padding-left: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .ft-group .ft-group { margin-left: 6px; }
+  .ft-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 8px;
+  }
+  .ft-row .ft-icon-inline { font-size: 13px; width: 18px; text-align: center; flex-shrink: 0; }
+
+  /* Acordeón: cada carpeta se puede plegar/desplegar */
+  summary.ft-root, summary.ft-folder {
+    cursor: pointer;
+    list-style: none;
+  }
+  summary.ft-root::-webkit-details-marker, summary.ft-folder::-webkit-details-marker { display: none; }
+  summary.ft-root::marker, summary.ft-folder::marker { content: ""; }
+  .ft-chevron {
+    display: inline-block;
+    width: 14px;
+    flex-shrink: 0;
+    font-size: 10px;
+    color: var(--muted);
+    transition: transform 0.15s ease;
+  }
+  details[open] > summary .ft-chevron { transform: rotate(90deg); }
+  details.ft-details { display: flex; flex-direction: column; gap: 8px; }
 
   /* ---- Layout for flow ---- */
   .flow-wrap {
@@ -290,16 +338,158 @@
 
   <section>
     <h2>Estructura de archivos</h2>
-    <div class="tree">
-<span class="dim">cuidate-mvp/</span>
-├── index.html <span class="dim">— monta #root, importa fuentes y main.tsx</span>
-├── package.json <span class="dim">— React 19, Vite, Tailwind 4, lucide-react (@google/genai sin uso)</span>
-├── vite.config.ts / tsconfig.json
-├── metadata.json <span class="dim">— metadata del scaffold de AI Studio</span>
-└── src/
-    ├── <span class="hl">main.tsx</span> <span class="dim">— createRoot().render(&lt;App /&gt;)</span>
-    ├── <span class="hl">App.tsx</span> <span class="dim">— ★ TODA la app vive aquí: estado + 4 vistas + datos mock inline</span>
-    └── index.css <span class="dim">— estilos base / Tailwind</span>
+    <div class="file-tree">
+
+      <details class="ft-details" open>
+      <summary class="ft-root">
+        <span class="ft-chevron">▶</span>
+        <span class="ft-icon">📁</span>
+        <div>
+          <div class="ft-name">cuidate-mvp</div>
+          <div class="ft-desc">carpeta raíz del proyecto</div>
+        </div>
+      </summary>
+
+      <div class="ft-group">
+
+        <div class="ft-row">
+          <span class="ft-icon-inline">🌐</span>
+          <div>
+            <div class="ft-name">index.html</div>
+            <div class="ft-desc">página que carga la app en el navegador</div>
+          </div>
+        </div>
+
+        <div class="ft-row">
+          <span class="ft-icon-inline">📝</span>
+          <div>
+            <div class="ft-name">README.md</div>
+            <div class="ft-desc">instrucciones para correr el proyecto</div>
+          </div>
+        </div>
+
+        <div class="ft-row">
+          <span class="ft-icon-inline">🗺️</span>
+          <div>
+            <div class="ft-name">diagrama-flujo.html</div>
+            <div class="ft-desc">este mismo diagrama, guardado como archivo</div>
+          </div>
+        </div>
+
+        <div class="ft-row">
+          <span class="ft-icon-inline">⚙️</span>
+          <div>
+            <div class="ft-name">package.json</div>
+            <div class="ft-desc">lista de librerías usadas y comandos (dev, build)</div>
+          </div>
+        </div>
+
+        <div class="ft-row">
+          <span class="ft-icon-inline">⚙️</span>
+          <div>
+            <div class="ft-name">package-lock.json</div>
+            <div class="ft-desc">versiones exactas instaladas, se genera solo</div>
+          </div>
+        </div>
+
+        <div class="ft-row">
+          <span class="ft-icon-inline">⚙️</span>
+          <div>
+            <div class="ft-name">vite.config.ts</div>
+            <div class="ft-desc">configuración de la herramienta que arma la app</div>
+          </div>
+        </div>
+
+        <div class="ft-row">
+          <span class="ft-icon-inline">⚙️</span>
+          <div>
+            <div class="ft-name">tsconfig.json</div>
+            <div class="ft-desc">reglas del lenguaje TypeScript</div>
+          </div>
+        </div>
+
+        <div class="ft-row">
+          <span class="ft-icon-inline">⚙️</span>
+          <div>
+            <div class="ft-name">metadata.json</div>
+            <div class="ft-desc">metadatos del scaffold original (Google AI Studio)</div>
+          </div>
+        </div>
+
+        <div class="ft-row">
+          <span class="ft-icon-inline">🔒</span>
+          <div>
+            <div class="ft-name">.env.example</div>
+            <div class="ft-desc">plantilla de una clave secreta, no usada aún</div>
+          </div>
+        </div>
+
+        <div class="ft-row">
+          <span class="ft-icon-inline">🙈</span>
+          <div>
+            <div class="ft-name">.gitignore</div>
+            <div class="ft-desc">qué archivos no se suben al repositorio</div>
+          </div>
+        </div>
+
+        <details class="ft-details" open>
+        <summary class="ft-folder">
+          <span class="ft-chevron">▶</span>
+          <span class="ft-icon">📁</span>
+          <div>
+            <div class="ft-name">src</div>
+            <div class="ft-desc">las pantallas y la lógica de la app</div>
+          </div>
+        </summary>
+
+        <div class="ft-group">
+          <div class="ft-row">
+            <span class="ft-icon-inline">▶️</span>
+            <div>
+              <div class="ft-name">main.tsx</div>
+              <div class="ft-desc">arranca la app dentro de la página</div>
+            </div>
+          </div>
+          <div class="ft-row">
+            <span class="ft-icon-inline">⭐</span>
+            <div>
+              <div class="ft-name">App.tsx</div>
+              <div class="ft-desc">toda la app vive aquí: las 4 pantallas y sus datos</div>
+            </div>
+          </div>
+          <div class="ft-row">
+            <span class="ft-icon-inline">🎨</span>
+            <div>
+              <div class="ft-name">index.css</div>
+              <div class="ft-desc">colores, tipografías y estilos base</div>
+            </div>
+          </div>
+        </div>
+        </details>
+
+        <details class="ft-details" open>
+        <summary class="ft-folder">
+          <span class="ft-chevron">▶</span>
+          <span class="ft-icon">📁</span>
+          <div>
+            <div class="ft-name">.claude</div>
+            <div class="ft-desc">configuración local para probar la app</div>
+          </div>
+        </summary>
+
+        <div class="ft-group">
+          <div class="ft-row">
+            <span class="ft-icon-inline">▶️</span>
+            <div>
+              <div class="ft-name">launch.json</div>
+              <div class="ft-desc">cómo levantar el servidor local (puerto 3000)</div>
+            </div>
+          </div>
+        </div>
+        </details>
+
+      </div>
+      </details>
     </div>
   </section>
 

@@ -5,13 +5,18 @@ siempre. El resto del contexto vive en archivos, no en esta conversación.
 
 ## 1. Identidad y propósito del proyecto
 
-**Cuídate MVP** es un prototipo frontend (React 19 + Vite 6 + TS + Tailwind v4) de una app
-móvil de salud para pacientes, en español. Simula: próxima cita, carga de documentos médicos,
-historial por especialidad y listado de citas. Nació como export de **Google AI Studio**
-(integración prevista con Gemini vía `@google/genai`).
+**Cuídate MVP** es una app móvil de salud para pacientes, en español, cuyo CTA principal es
+reunir los documentos necesarios para una cita física y enviarlos fácilmente a una papelería
+para imprimirlos (por WhatsApp o correo), más la ingesta automática de esos documentos desde
+email/WhatsApp. Nació como export de **Google AI Studio** (integración con Gemini vía
+`@google/genai`).
 
-Estado real hoy: **mockup visual**. Todo el contenido es data hardcodeada en `src/App.tsx`.
-No hay backend, no hay auth, no hay tests. Detalle completo y actualizado en [state/current.md](state/current.md).
+Estado real hoy: **backend real (Fases 0-2 del plan) + frontend conectado**. Express + SQLite
+(`node:sqlite`) sirven documentos/citas/paquetes de impresión reales; el frontend (`src/App.tsx`
++ `src/views/`) consume esa API, sin datos hardcodeados. Auth real, ingesta de Gmail/Outlook y
+PWA/WhatsApp share-target (Fases 3-6) siguen pendientes — requieren credenciales externas que
+solo el usuario puede crear. Detalle completo en [state/current.md](state/current.md) y en el
+plan original: `C:\Users\Foodology SAS\.claude\plans\el-enfoque-es-la-parsed-salamander.md`.
 
 ## 2. Reglas duras e invariantes
 
@@ -24,6 +29,10 @@ No hay backend, no hay auth, no hay tests. Detalle completo y actualizado en [st
 - No tocar `vite.config.ts` (`DISABLE_HMR`) pensando que es config rota — es intencional para
   AI Studio. Ver [gotchas/known-issues.md](gotchas/known-issues.md).
 - No buscar `tailwind.config.js` — no existe, Tailwind v4 usa `@theme` en `src/index.css`.
+- No buscar `better-sqlite3` — el backend usa `node:sqlite` (built-in de Node, sin compilación
+  nativa). Ver [gotchas/known-issues.md](gotchas/known-issues.md).
+- El backend lee `SERVER_PORT`, nunca `PORT` — `PORT` está reservado para el dev server de Vite
+  en este entorno. Ver el mismo gotcha antes de tocar `server/config/env.ts` o `vite.config.ts`.
 - Convertir cualquier procedimiento que se repita 2+ veces en un archivo dentro de `skills/`.
 - Mantener este archivo (`AGENTS.md`) por debajo de ~300 líneas y de alta densidad de
   información. Si crece, mover detalle a la carpeta correspondiente y dejar aquí solo el puntero.
@@ -39,11 +48,10 @@ Para entender el proyecto desde cero, en este orden (parar en cuanto se tenga lo
 2. [state/current.md](state/current.md) — qué está hecho, pendiente, y blockers.
 3. [gotchas/known-issues.md](gotchas/known-issues.md) — antes de tocar config o deps.
 4. `decisions/decisiones.md` o `decisions/design.md` — solo si la tarea toca arquitectura o UI.
-5. `src/App.tsx` — solo si la tarea requiere editar la app en sí (es el único archivo de lógica
-   real, 547 líneas). No hace falta leerlo completo si la tarea es puntual: usar Grep para
-   localizar la vista/sección relevante primero.
+5. `src/App.tsx` + `src/views/*.tsx` (frontend) o `server/**` (backend) — solo la vista/ruta/
+   servicio puntual relevante a la tarea. Usar Grep para localizar, no leer todo el árbol.
 6. `skills/*.md` — el procedimiento específico si existe uno para la tarea (correr el dev
-   server, añadir una vista, tocar el design system).
+   server, añadir una vista, tocar el design system, tocar el backend).
 
 Nunca es necesario leer `package-lock.json`, `node_modules/`, ni `diagrama-flujo.html` completo
 salvo que la tarea sea específicamente sobre ese diagrama.
@@ -52,9 +60,10 @@ salvo que la tarea sea específicamente sobre ese diagrama.
 
 | Tipo de tarea | Archivo |
 |---|---|
-| Correr/previsualizar la app, comandos npm | [skills/dev-workflow.md](skills/dev-workflow.md) |
-| Añadir o modificar una vista en `App.tsx` | [skills/add-view.md](skills/add-view.md) |
+| Correr/previsualizar la app (frontend+backend), comandos npm | [skills/dev-workflow.md](skills/dev-workflow.md) |
+| Añadir o modificar una vista en `App.tsx`/`src/views/` | [skills/add-view.md](skills/add-view.md) |
 | Añadir/cambiar un color, fuente o sombra | [skills/design-tokens.md](skills/design-tokens.md) |
+| Tocar el backend (rutas, DB, servicios en `server/`) | [skills/backend-architecture.md](skills/backend-architecture.md) |
 | Duda sobre por qué algo está como está | [gotchas/known-issues.md](gotchas/known-issues.md) → si no está, `decisions/decisiones.md` |
 | Tarea de UI/branding nueva | [decisions/design.md](decisions/design.md) primero, para no romper el sistema de tokens existente |
 

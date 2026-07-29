@@ -1,20 +1,20 @@
-# Skill: añadir una vista nueva a `App.tsx`
+# Skill: añadir una vista nueva
 
-Patrón actual (mientras siga vigente la decisión de app monolítica, ver [[decisions/decisiones]]):
+Desde 2026-07-22 `App.tsx` es un shell delgado, no un monolito (ver [[decisions/decisiones]]).
 
-1. Extender el union type del estado: `useState<'home'|'appointment'|'documents'|'citas'|'NUEVA'>`.
-2. Añadir un bloque `{currentView === 'NUEVA' && (...)}` en el `return` de `App.tsx`, siguiendo
-   la estructura de una vista existente: `<header sticky>` (con botón volver si no es raíz,
-   patrón `<ArrowLeft onClick={() => setCurrentView('home')}>`) + `<main className="flex-1
-   overflow-y-auto ... scrollbar-hide">`.
-3. Si la vista debe aparecer en la nav inferior: añadir un `<button>` dentro del bloque
-   `{currentView !== 'appointment' && (<nav>...)}` cerca de línea 512, siguiendo el patrón de
-   `home`/`documents`/`citas` (icono de `lucide-react` + estado activo con `bg-ultra-indigo`).
-4. Usar solo tokens del design system existente (colores `ultra-indigo`, `cyber-lavender`,
+1. Crear `src/views/NuevaView.tsx` recibiendo props (datos + callbacks), no fetch propio salvo
+   que sea igual de local que `AppointmentView.tsx` (que sí hace su propio `useEffect`+fetch
+   porque depende de un id de la URL/estado).
+2. Extender el tipo `View` en `App.tsx` (`{name:'home'} | {name:'documents'} | ... | {name:'nueva'}`).
+3. Añadir el bloque `{view.name === 'nueva' && <NuevaView .../>}` en el `return` de `App.tsx`.
+4. Si la vista debe aparecer en la nav inferior: añadir un `<button>` en el bloque `<nav>` de
+   `App.tsx`, siguiendo el patrón de `home`/`documents`/`citas` (icono de `lucide-react` + estado
+   activo con `bg-ultra-indigo`).
+5. Usar solo tokens del design system existente (colores `ultra-indigo`, `cyber-lavender`,
    `lima`, etc. y sombras `shadow-float`/`shadow-modal`) — no introducir colores ad-hoc. Ver
    [[decisions/design]] para la tabla completa de tokens.
-5. Todo el contenido sigue siendo mock data inline (no hay fetch de API aún) — mantener
-   consistencia con el resto del archivo hasta que se conecte un backend real.
+6. Para datos: usar `src/api/client.ts` (`api.getX()`/`api.postX()`), no `fetch` directo — así
+   los tipos (`DocumentRecord`, `Appointment`) quedan centralizados.
 
-**Cuándo NO seguir este patrón:** si el proyecto migra a react-router o se componentiza
-`App.tsx` (ver decisión pendiente en [[state/current]]), actualizar este skill.
+**Sigue sin haber router** (`useState` alcanza) — no introducir react-router sin revisar antes
+[[decisions/decisiones]].

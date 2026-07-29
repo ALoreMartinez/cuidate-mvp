@@ -10,9 +10,9 @@
   --color-negro: #0A0A0A;
   --color-azul-info: #2A4BFF;
   
-  --font-display: "Nohemi", "Clash Display", sans-serif;
-  --font-body: "Switzer", "Inter", sans-serif;
-  --font-sans: "Switzer", "Inter", sans-serif;
+  --font-display: "Clash Display", sans-serif;
+  --font-body: "Switzer", sans-serif;
+  --font-sans: "Switzer", sans-serif;
 
   --shadow-float: 0 8px 24px rgba(12,0,97,0.12);
   --shadow-modal: 0 16px 40px rgba(0,0,0,0.25);
